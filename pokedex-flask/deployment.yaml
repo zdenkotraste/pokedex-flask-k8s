@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pokedex-flask
+  labels:
+    app: pokedex-flask
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pokedex-flask
+  template:
+    metadata:
+      labels:
+        app: pokedex-flask
+    spec:
+      volumes:
+      - name: pokedex-static
+        persistentVolumeClaim:
+          claimName: pokedex-static-pv-claim
+      - name: pokedex-templates
+        persistentVolumeClaim:
+          claimName: pokedex-templates-pv-claim
+      containers:
+      - name: pokedex
+        image: zdenkoo98/pokedex-flask:8
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - mountPath: "/app/templates"
+          name: pokedex-templates
+        - mountPath: "/app/static"
+          name: pokedex-static
